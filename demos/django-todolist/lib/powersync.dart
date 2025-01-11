@@ -10,6 +10,7 @@ import 'package:powersync_django_todolist_demo/api_client.dart';
 
 import './app_config.dart';
 import './models/schema.dart';
+import 'src/open_factory.dart';
 
 final log = Logger('powersync-django');
 final prefs = SharedPreferencesAsync();
@@ -114,8 +115,11 @@ Future<String> getDatabasePath() async {
 Future<void> openDatabase() async {
   // Open the local database
   if (!_dbInitialized) {
-    db = PowerSyncDatabase(
-        schema: schema, path: await getDatabasePath(), logger: attachedLogger);
+    db = PowerSyncDatabase.withFactory(
+      crateOpenFactory(await getDatabasePath(), 'my_key'),
+      schema: schema,
+      logger: debugLogger,
+    );
     await db.initialize();
 
     // Demo using SQLite Full-Text Search with PowerSync.
